@@ -1,0 +1,162 @@
+// src/index.js
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import './index.css';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+// src/App.js
+import React from 'react';
+import WheelOfFortune from './WheelOfFortune';
+import './WheelOfFortune.css';
+
+function App() {
+  return (
+    <div className="App">
+      <header className="App-header">
+        <h1>Welcome to the Wheel of Fortune!</h1>
+      </header>
+      <main>
+        <WheelOfFortune />
+      </main>
+    </div>
+  );
+}
+
+export default App;
+
+// src/WheelOfFortune.js
+import React, { useState } from 'react';
+import './WheelOfFortune.css';
+
+const WheelOfFortune = () => {
+  const [rotation, setRotation] = useState(0); // Track the current rotation angle
+  const [spinning, setSpinning] = useState(false); // Prevent multiple spins during animation
+
+  const segments = ["Prize 1", "Prize 2", "Prize 3", "Prize 4", "Prize 5", "Prize 6"];
+  const segmentAngle = 360 / segments.length;
+
+  const spinWheel = () => {
+    if (spinning) return; // Prevent double clicks during spinning
+
+    setSpinning(true);
+    const randomSpin = Math.floor(Math.random() * 5 + 5) * 360; // Random spin amount
+    const landingAngle = Math.floor(Math.random() * 360); // Random landing angle
+
+    const newRotation = rotation + randomSpin + landingAngle;
+
+    setRotation(newRotation);
+
+    // Allow spinning again after the animation
+    setTimeout(() => setSpinning(false), 5000);
+  };
+
+  return (
+    <div className="wheel-container">
+      <div
+        className="wheel"
+        style={{ transform: `rotate(${rotation}deg)` }}
+      >
+        {segments.map((segment, index) => (
+          <div
+            key={index}
+            className="segment"
+            style={{
+              transform: `rotate(${index * segmentAngle}deg)`,
+              background: index % 2 === 0 ? '#f4a261' : '#e76f51',
+            }}
+          >
+            <span>{segment}</span>
+          </div>
+        ))}
+      </div>
+      <button onClick={spinWheel} className="spin-button" disabled={spinning}>
+        {spinning ? 'Spinning...' : 'Spin the Wheel!'}
+      </button>
+    </div>
+  );
+};
+
+export default WheelOfFortune;
+
+// src/WheelOfFortune.css
+.wheel-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 50px;
+}
+
+.wheel {
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  position: relative;
+  border: 5px solid #264653;
+  overflow: hidden;
+  transform-origin: center;
+  transition: transform 4s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+}
+
+.segment {
+  width: 50%;
+  height: 50%;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform-origin: left center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: #fff;
+  text-align: center;
+}
+
+.spin-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #2a9d8f;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.spin-button:disabled {
+  background-color: #b2becd;
+  cursor: not-allowed;
+}
+
+.spin-button:hover:not(:disabled) {
+  background-color: #21867a;
+}
+
+// src/index.css
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f1faee;
+  color: #333;
+}
+
+.App {
+  text-align: center;
+  padding: 20px;
+}
+
+.App-header {
+  background-color: #264653;
+  padding: 20px;
+  color: white;
+}
